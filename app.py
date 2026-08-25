@@ -6,7 +6,7 @@ st.set_page_config(page_title="Nährstoff-Tracker", layout="wide")
 
 # === PASSWORTSCHUTZ ===
 # Ändere "meinPasswort123" in dein persönliches Wunschpasswort!
-PASSWORT = "meinPasswort123"
+PASSWORT = "leckerlecker"
 
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
