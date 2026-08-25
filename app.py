@@ -1,15 +1,36 @@
 import streamlit as st
 import pandas as pd
 
+# Page config
 st.set_page_config(page_title="Nährstoff-Tracker", layout="wide")
+
+# === PASSWORTSCHUTZ ===
+# Ändere "meinPasswort123" in dein persönliches Wunschpasswort!
+PASSWORT = "meinPasswort123"
+
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    st.title("🔒 Zugang geschützt")
+    user_password = st.text_input("Bitte Passwort eingeben:", type="password")
+    if st.button("Anmelden"):
+        if user_password == PASSWORT:
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("Falsches Passwort!")
+    st.stop()
+
+# === NÄHRSTOFF-TRACKER (Nur nach Anmeldung sichtbar) ===
 st.title("🥗 Mein Nährstoff-Tracker")
 
 # 1. Datenbank der Lebensmittel (Basiswerte pro 100g oder 1 Portion)
 if "food_db" not in st.session_state:
     st.session_state.food_db = pd.DataFrame([
-        {"Lebensmittel": "Vollkorn-Haferflocken", "Einheit": "g", "Energie (kcal)": 361, "Eiweiß (g)": 14.0, "Magnesium (mg)": 130},
-        {"Lebensmittel": "Kulturheidelbeeren", "Einheit": "g", "Energie (kcal)": 50, "Eiweiß (g)": 0.6, "Magnesium (mg)": 6},
-        {"Lebensmittel": "Magnesium Komplex", "Einheit": "Kapsel", "Energie (kcal)": 0, "Eiweiß (g)": 0.0, "Magnesium (mg)": 400},
+        {"Lebensmittel": "Vollkorn-Haferflocken", "Einheit": "g", "Energie (kcal)": 361.0, "Eiweiß (g)": 14.0, "Magnesium (mg)": 130.0},
+        {"Lebensmittel": "Kulturheidelbeeren", "Einheit": "g", "Energie (kcal)": 50.0, "Eiweiß (g)": 0.6, "Magnesium (mg)": 6.0},
+        {"Lebensmittel": "Magnesium Komplex", "Einheit": "Kapsel", "Energie (kcal)": 0.0, "Eiweiß (g)": 0.0, "Magnesium (mg)": 400.0},
     ])
 
 # 2. Tages-Logbuch
@@ -44,7 +65,7 @@ with tab1:
     food_info = st.session_state.food_db[st.session_state.food_db["Lebensmittel"] == selected_food].iloc[0]
     unit_label = food_info["Einheit"]
     
-    amount = st.number_input(f"Menge in {unit_label}", min_value=0.0, value=100.0 if unit_label == "g" else 1.0)
+    amount = st.number_input(f"Menge in {unit_label}", min_value=0.0, value=100.0 if unit_label in ["g", "ml"] else 1.0)
     
     if st.button("Hinzufügen"):
         factor = amount / 100.0 if unit_label in ["g", "ml"] else amount
