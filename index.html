@@ -3,15 +3,31 @@
         // PASSWORT-SCHUTZ (Hier dein gewünschtes Passwort eintragen)
         const PASSWORT = "Gesund";
 
-        function checkPassword() {
-            let eingabe = prompt("Bitte gib das Passwort ein, um auf den Nährstoff-Tracker zuzugreifen:");
-            if (eingabe !== PASSWORT) {
-                alert("Falsches Passwort! Zugriff verweigert.");
-                document.body.innerHTML = '<div style="text-align:center; padding: 50px; font-family: sans-serif;"><h1>403 - Zugriff verweigert</h1><p>Bitte lade die Seite neu und gib das richtige Passwort ein.</p></div>';
-                return false;
-            }
-            return true;
-        }
+        // PASSWORT-SCHUTZ (Achte auf gerade Anführungszeichen "")
+const PASSWORT = "DeinPasswort123";
+
+function checkPassword() {
+    let eingabe = prompt("Bitte gib das Passwort ein:");
+    if (!eingabe || eingabe.trim() !== PASSWORT) {
+        alert("Falsches Passwort! Zugriff verweigert.");
+        document.body.innerHTML = '<div style="text-align:center; padding: 50px; font-family: sans-serif;"><h1>403 - Zugriff verweigert</h1><p>Bitte lade die Seite neu und gib das richtige Passwort ein.</p></div>';
+        return false;
+    }
+    return true;
+}
+
+// Start der Anwendung
+document.addEventListener('DOMContentLoaded', () => {
+    if (checkPassword()) {
+        loadFromLocalStorage();
+        populateSelectOptions();
+        renderNutrientsTable();
+        renderLogHistory();
+        updateSummaryCards();
+        updateCsvPreview();
+    }
+});
+
 
         // DGE Daily Recommended Intake Database
         const nutrientDatabase = [
