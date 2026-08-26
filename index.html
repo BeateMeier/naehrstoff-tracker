@@ -1,35 +1,19 @@
-    <!-- JAVASCRIPT LOGIC -->
+        <!-- JAVASCRIPT LOGIC -->
     <script>
-        // PASSWORT-SCHUTZ (Hier dein gewünschtes Passwort eintragen)
-        const PASSWORT = "Gesund";
+        // === Passwort-Prüfung direkt beim Laden ===
+        (function() {
+            const PASSWORT = "Lecker"; // Hier dein Passwort eintragen!
+            const eingabe = prompt("Bitte gib das Passwort ein:");
+            if (!eingabe || eingabe.trim() !== PASSWORT) {
+                alert("Falsches Passwort! Zugriff verweigert.");
+                document.body.innerHTML = '<div style="text-align:center; padding: 50px; font-family: sans-serif; color: white;"><h1>403 - Zugriff verweigert</h1><p>Bitte lade die Seite neu und gib das richtige Passwort ein.</p></div>';
+                window.stop();
+            }
+        })();
+    </script>
 
-        // PASSWORT-SCHUTZ (Achte auf gerade Anführungszeichen "")
-const PASSWORT = "DeinPasswort123";
-
-function checkPassword() {
-    let eingabe = prompt("Bitte gib das Passwort ein:");
-    if (!eingabe || eingabe.trim() !== PASSWORT) {
-        alert("Falsches Passwort! Zugriff verweigert.");
-        document.body.innerHTML = '<div style="text-align:center; padding: 50px; font-family: sans-serif;"><h1>403 - Zugriff verweigert</h1><p>Bitte lade die Seite neu und gib das richtige Passwort ein.</p></div>';
-        return false;
-    }
-    return true;
-}
-
-// Start der Anwendung
-document.addEventListener('DOMContentLoaded', () => {
-    if (checkPassword()) {
-        loadFromLocalStorage();
-        populateSelectOptions();
-        renderNutrientsTable();
-        renderLogHistory();
-        updateSummaryCards();
-        updateCsvPreview();
-    }
-});
-
-
-        // DGE Daily Recommended Intake Database
+    <script>
+        // === DGE Daily Recommended Intake Database ===
         const nutrientDatabase = [
             // Makronährstoffe
             { id: 'kcal', name: 'Energie (Kalorien)', cat: 'macro', unit: 'kcal', rdaM: 2200, rdaW: 1800, consumed: 0, icon: 'fa-bolt', color: 'amber' },
@@ -86,10 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let currentCategory = 'all';
         let foodLogs = [];
 
-        // Initialize App with Password Check
+        // Initialize App
         document.addEventListener('DOMContentLoaded', () => {
-            if (!checkPassword()) return; // bricht ab, wenn Passwort falsch ist
-
             loadFromLocalStorage();
             populateSelectOptions();
             renderNutrientsTable();
@@ -156,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Populate Dropdowns
         function populateSelectOptions() {
             const select = document.getElementById('logNutrientSelect');
+            if(!select) return;
             select.innerHTML = '';
             nutrientDatabase.forEach(item => {
                 const option = document.createElement('option');
@@ -168,9 +151,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Render Overview Table
         function renderNutrientsTable() {
             const tbody = document.getElementById('nutrientsTableBody');
+            if(!tbody) return;
             tbody.innerHTML = '';
 
-            const searchTerm = document.getElementById('nutrientSearchInput').value.toLowerCase();
+            const searchInput = document.getElementById('nutrientSearchInput');
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
 
             const filtered = nutrientDatabase.filter(item => {
                 const matchesCat = (currentCategory === 'all') || (item.cat === currentCategory);
@@ -251,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Adjust nutrient value directly
         function adjustNutrientValue(id, delta) {
             const item = nutrientDatabase.find(n => n.id === id);
             if (item) {
@@ -272,7 +256,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Summary Top Cards Update
         function updateSummaryCards() {
             const kcalItem = nutrientDatabase.find(n => n.id === 'kcal');
             const proteinItem = nutrientDatabase.find(n => n.id === 'protein');
@@ -297,7 +280,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('summaryMineralsPct').textContent = `${Math.round((minMet / minItems.length) * 100)}% im Soll`;
         }
 
-        // Preset Loader
         function loadPresetFood() {
             const key = document.getElementById('presetFoodSelect').value;
             if (!key || !foodPresets[key]) return;
@@ -371,6 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function renderLogHistory() {
             const tbody = document.getElementById('logHistoryTableBody');
+            if(!tbody) return;
             tbody.innerHTML = '';
 
             document.getElementById('logCountBadge').textContent = `${foodLogs.length} Einträge`;
@@ -397,7 +380,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // EXCEL / CSV EXPORT AND IMPORT
         function generateCSVData() {
             let csv = "Nährstoff-ID;Nährstoff Name;Kategorie;Einheit;Empfohlene Tagesmenge (Männlich);Empfohlene Tagesmenge (Weiblich);Konsumiert Heute;Prozent Erreicht (%)\n";
             nutrientDatabase.forEach(item => {
@@ -473,7 +455,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Local Storage Persistence
         function saveToLocalStorage() {
             const data = {
                 gender: currentGender,
