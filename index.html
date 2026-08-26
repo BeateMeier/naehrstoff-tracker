@@ -1,18 +1,5 @@
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // === Passwort-Prüfung direkt beim Laden ===
-        (function() {
-            const PASSWORT = "Lecker"; // Hier dein Passwort eintragen!
-            const eingabe = prompt("Bitte gib das Passwort ein:");
-            if (!eingabe || eingabe.trim() !== PASSWORT) {
-                alert("Falsches Passwort! Zugriff verweigert.");
-                document.body.innerHTML = '<div style="text-align:center; padding: 50px; font-family: sans-serif; color: white;"><h1>403 - Zugriff verweigert</h1><p>Bitte lade die Seite neu und gib das richtige Passwort ein.</p></div>';
-                window.stop();
-            }
-        })();
-    </script>
-
-    <script>
         // === DGE Daily Recommended Intake Database ===
         const nutrientDatabase = [
             // Makronährstoffe
