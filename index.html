@@ -1,22 +1,250 @@
-    <!-- JAVASCRIPT LOGIC -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nährstoff-Tracker</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+
+    <!-- JAVASCRIPT: ISOLIERTE PASSWORT-ABFRAGE -->
     <script>
-        // === DGE Daily Recommended Intake Database ===
+        (function() {
+            const PASSWORT = "DeinPasswort123"; // === HIER DEIN PASSWORT EINTRAGEN ===
+            const eingabe = prompt("Bitte gib das Passwort ein:");
+            if (!eingabe || eingabe.trim() !== PASSWORT) {
+                alert("Falsches Passwort! Zugriff verweigert.");
+                document.body.innerHTML = '<div style="text-align:center; padding: 50px; font-family: sans-serif; color: white;"><h1>403 - Zugriff verweigert</h1><p>Bitte lade die Seite neu und gib das richtige Passwort ein.</p></div>';
+                window.stop();
+            }
+        })();
+    </script>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-bold text-xl shadow">
+                    <i class="fa-solid fa-leaf"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-white leading-none">Nährstoff-Tracker</h1>
+                    <p class="text-xs text-slate-400 mt-1">DGE Empfehlungen & Verzehranalyse</p>
+                </div>
+            </div>
+
+            <!-- Profile Selector -->
+            <div class="flex items-center bg-slate-900/80 p-1 rounded-lg border border-slate-700 text-xs">
+                <span class="text-slate-400 px-2 font-medium">Profil:</span>
+                <button id="profileMaleBtn" onclick="setProfile('m')" class="px-3 py-1 rounded-md font-medium transition-colors bg-emerald-500 text-slate-950 shadow">Männlich</button>
+                <button id="profileFemaleBtn" onclick="setProfile('w')" class="px-3 py-1 rounded-md font-medium text-slate-300 hover:text-white transition-colors">Weiblich</button>
+            </div>
+        </div>
+        
+        <!-- Tab Navigation -->
+        <div class="max-w-7xl mx-auto px-4 flex border-t border-slate-700/50 overflow-x-auto">
+            <button id="tabNavOverview" onclick="switchTab('overview')" class="px-4 py-3 text-sm font-semibold border-b-2 border-emerald-400 text-emerald-400 flex items-center space-x-2 whitespace-nowrap">
+                <i class="fa-solid fa-chart-pie"></i><span>Übersicht</span>
+            </button>
+            <button id="tabNavLog" onclick="switchTab('log')" class="px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2 whitespace-nowrap">
+                <i class="fa-solid fa-utensils"></i><span>Essen eintragen</span>
+            </button>
+            <button id="tabNavExcel" onclick="switchTab('excel')" class="px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2 whitespace-nowrap">
+                <i class="fa-solid fa-file-excel"></i><span>Excel / CSV</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 py-6">
+
+        <!-- TAB 1: ÜBERSICHT -->
+        <div id="tabOverview" class="space-y-6">
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                    <div class="flex justify-between items-center text-slate-400 text-xs font-semibold uppercase">
+                        <span>Kalorien</span><i class="fa-solid fa-bolt text-amber-400"></i>
+                    </div>
+                    <div class="text-xl font-bold text-white mt-1" id="summaryCalories">0 / 2200 kcal</div>
+                    <div class="w-full bg-slate-700 h-1.5 rounded-full mt-3 overflow-hidden">
+                        <div id="summaryCaloriesBar" class="bg-amber-400 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                    <div class="flex justify-between items-center text-slate-400 text-xs font-semibold uppercase">
+                        <span>Protein</span><i class="fa-solid fa-drumstick-bite text-blue-400"></i>
+                    </div>
+                    <div class="text-xl font-bold text-white mt-1" id="summaryProtein">0 / 70 g</div>
+                    <div class="w-full bg-slate-700 h-1.5 rounded-full mt-3 overflow-hidden">
+                        <div id="summaryProteinBar" class="bg-blue-400 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                    <div class="flex justify-between items-center text-slate-400 text-xs font-semibold uppercase">
+                        <span>Vitamine</span><i class="fa-solid fa-capsules text-emerald-400"></i>
+                    </div>
+                    <div class="text-xl font-bold text-white mt-1" id="summaryVitaminsCount">0 / 13</div>
+                    <p class="text-xs text-slate-400 mt-2" id="summaryVitaminsPct">0% im Soll</p>
+                </div>
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                    <div class="flex justify-between items-center text-slate-400 text-xs font-semibold uppercase">
+                        <span>Mineralstoffe</span><i class="fa-solid fa-atom text-purple-400"></i>
+                    </div>
+                    <div class="text-xl font-bold text-white mt-1" id="summaryMineralsCount">0 / 11</div>
+                    <p class="text-xs text-slate-400 mt-2" id="summaryMineralsPct">0% im Soll</p>
+                </div>
+            </div>
+
+            <!-- Controls & Filter -->
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-wrap gap-3 items-center justify-between">
+                <div class="flex flex-wrap gap-2">
+                    <button id="catBtn-all" onclick="filterCategory('all')" class="cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white">Alle Nährstoffe</button>
+                    <button id="catBtn-macro" onclick="filterCategory('macro')" class="cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200">Makros</button>
+                    <button id="catBtn-vit-water" onclick="filterCategory('vit-water')" class="cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200">Vitamine (Wasserlösl.)</button>
+                    <button id="catBtn-vit-fat" onclick="filterCategory('vit-fat')" class="cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200">Vitamine (Fettlösl.)</button>
+                    <button id="catBtn-minerals" onclick="filterCategory('minerals')" class="cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200">Mineralstoffe</button>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="nutrientSearchInput" onkeyup="renderNutrientsTable()" placeholder="Suchen..." class="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs border border-slate-700 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                    <button onclick="resetTodayData()" class="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 text-xs font-medium">Zurücksetzen</button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-900/60 text-slate-400 text-xs uppercase font-semibold border-b border-slate-700">
+                                <th class="py-3 px-4">Nährstoff</th>
+                                <th class="py-3 px-4 text-center">Tagesziel (DGE)</th>
+                                <th class="py-3 px-4 text-center">Aufgenommen</th>
+                                <th class="py-3 px-4">Fortschritt</th>
+                                <th class="py-3 px-4 text-right">Differenz</th>
+                                <th class="py-3 px-4 text-center">Aktionen</th>
+                            </tr>
+                        </thead>
+                        <tbody id="nutrientsTableBody" class="divide-y divide-slate-700/50 bg-slate-800 text-slate-200">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: LOGGING -->
+        <div id="tabLog" class="space-y-6 hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Preset Food Form -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-4">
+                    <h2 class="text-base font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-bowl-food text-emerald-400"></i>
+                        <span>Lebensmittel-Vorlage hinzufügen</span>
+                    </h2>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1 font-medium">Vorlage auswählen</label>
+                        <select id="presetFoodSelect" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            <option value="">-- Bitte wählen --</option>
+                            <option value="haferflocken">Haferflocken (100g)</option>
+                            <option value="lachs">Lachsfilet (150g)</option>
+                            <option value="orange">Frische Orange (150g)</option>
+                            <option value="spinat">Blattspinat gekocht (200g)</option>
+                            <option value="mandeln">Mandeln (30g)</option>
+                            <option value="milch">Vollmilch (250ml)</option>
+                            <option value="apfel">Apfel mit Schale (180g)</option>
+                        </select>
+                    </div>
+                    <button onclick="loadPresetFood()" class="w-full py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm transition-colors shadow">
+                        Hinzufügen & Nährstoffe anrechnen
+                    </button>
+                </div>
+
+                <!-- Single Nutrient Form -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-4">
+                    <h2 class="text-base font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-plus-circle text-emerald-400"></i>
+                        <span>Einzelnen Nährstoff eintragen</span>
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1 font-medium">Nährstoff</label>
+                            <select id="logNutrientSelect" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1 font-medium">Menge</label>
+                            <input type="number" id="logNutrientAmount" step="0.1" placeholder="z. B. 15" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                    </div>
+                    <button onclick="addSingleNutrientLog()" class="w-full py-2.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white font-semibold text-sm transition-colors">
+                        Einzelwert verbuchen
+                    </button>
+                </div>
+            </div>
+
+            <!-- Log History Table -->
+            <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow">
+                <div class="p-4 border-b border-slate-700 flex justify-between items-center">
+                    <h3 class="font-bold text-white text-sm">Heute verzehrte Mahlzeiten & Einträge</h3>
+                    <span id="logCountBadge" class="text-xs bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full font-medium">0 Einträge</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead>
+                            <tr class="bg-slate-900/60 text-slate-400 text-xs uppercase font-semibold border-b border-slate-700">
+                                <th class="py-3 px-4">Uhrzeit</th>
+                                <th class="py-3 px-4">Eintrag</th>
+                                <th class="py-3 px-4">Details / Nährwerte</th>
+                                <th class="py-3 px-4 text-right">Löschen</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logHistoryTableBody" class="divide-y divide-slate-700/50 bg-slate-800 text-slate-200">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: EXCEL / CSV -->
+        <div id="tabExcel" class="space-y-6 hidden">
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4">
+                <h2 class="text-lg font-bold text-white">Daten sichern & Exportieren</h2>
+                <p class="text-xs text-slate-400">Exportiere deine Tageswerte als CSV-Datei für Microsoft Excel oder importiere eine gesicherte Datei.</p>
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="exportToExcelCSV()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-sm transition-colors flex items-center space-x-2">
+                        <i class="fa-solid fa-file-excel"></i><span>Als CSV / Excel herunterladen</span>
+                    </button>
+                    <label class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-lg text-sm cursor-pointer transition-colors flex items-center space-x-2">
+                        <i class="fa-solid fa-file-import"></i><span>CSV Importieren</span>
+                        <input type="file" accept=".csv" onchange="importFromCSV(event)" class="hidden">
+                    </label>
+                </div>
+            </div>
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-2">
+                <h3 class="text-sm font-semibold text-slate-300">Vorschau der Export-Daten:</h3>
+                <textarea id="csvPreviewArea" readonly class="w-full h-48 bg-slate-950 text-slate-300 font-mono text-xs p-3 rounded-lg border border-slate-700 focus:outline-none"></textarea>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MAIN JAVASCRIPT LOGIC -->
+    <script>
         const nutrientDatabase = [
-            // Makronährstoffe
             { id: 'kcal', name: 'Energie (Kalorien)', cat: 'macro', unit: 'kcal', rdaM: 2200, rdaW: 1800, consumed: 0, icon: 'fa-bolt', color: 'amber' },
             { id: 'protein', name: 'Protein (Eiweiß)', cat: 'macro', unit: 'g', rdaM: 70, rdaW: 60, consumed: 0, icon: 'fa-drumstick-bite', color: 'blue' },
             { id: 'carbs', name: 'Kohlenhydrate', cat: 'macro', unit: 'g', rdaM: 260, rdaW: 230, consumed: 0, icon: 'fa-wheat-awn', color: 'yellow' },
             { id: 'fat', name: 'Fett (Gesamt)', cat: 'macro', unit: 'g', rdaM: 70, rdaW: 60, consumed: 0, icon: 'fa-oil-well', color: 'orange' },
             { id: 'fiber', name: 'Ballaststoffe', cat: 'macro', unit: 'g', rdaM: 30, rdaW: 30, consumed: 0, icon: 'fa-seedling', color: 'emerald' },
             { id: 'water', name: 'Wasser / Flüssigkeit', cat: 'macro', unit: 'ml', rdaM: 2500, rdaW: 2000, consumed: 0, icon: 'fa-glass-water', color: 'cyan' },
-
-            // Fettlösliche Vitamine
             { id: 'vitA', name: 'Vitamin A (Retinol)', cat: 'vit-fat', unit: 'µg', rdaM: 850, rdaW: 700, consumed: 0, icon: 'fa-eye', color: 'orange' },
             { id: 'vitD', name: 'Vitamin D (Calciferol)', cat: 'vit-fat', unit: 'µg', rdaM: 20, rdaW: 20, consumed: 0, icon: 'fa-sun', color: 'yellow' },
             { id: 'vitE', name: 'Vitamin E (Tocopherol)', cat: 'vit-fat', unit: 'mg', rdaM: 14, rdaW: 12, consumed: 0, icon: 'fa-shield-halved', color: 'green' },
             { id: 'vitK', name: 'Vitamin K (Phyllochinon)', cat: 'vit-fat', unit: 'µg', rdaM: 70, rdaW: 60, consumed: 0, icon: 'fa-leaf', color: 'emerald' },
-
-            // Wasserlösliche Vitamine
             { id: 'vitC', name: 'Vitamin C (Ascorbinsäure)', cat: 'vit-water', unit: 'mg', rdaM: 110, rdaW: 95, consumed: 0, icon: 'fa-lemon', color: 'yellow' },
             { id: 'vitB1', name: 'Vitamin B1 (Thiamin)', cat: 'vit-water', unit: 'mg', rdaM: 1.2, rdaW: 1.0, consumed: 0, icon: 'fa-vial', color: 'sky' },
             { id: 'vitB2', name: 'Vitamin B2 (Riboflavin)', cat: 'vit-water', unit: 'mg', rdaM: 1.4, rdaW: 1.1, consumed: 0, icon: 'fa-vial', color: 'sky' },
@@ -26,8 +254,6 @@
             { id: 'vitB7', name: 'Vitamin B7 (Biotin)', cat: 'vit-water', unit: 'µg', rdaM: 45, rdaW: 45, consumed: 0, icon: 'fa-vial', color: 'sky' },
             { id: 'vitB9', name: 'Vitamin B9 (Folsäure)', cat: 'vit-water', unit: 'µg', rdaM: 300, rdaW: 300, consumed: 0, icon: 'fa-vial', color: 'sky' },
             { id: 'vitB12', name: 'Vitamin B12 (Cobalamin)', cat: 'vit-water', unit: 'µg', rdaM: 4.0, rdaW: 4.0, consumed: 0, icon: 'fa-vial', color: 'sky' },
-
-            // Mineralstoffe & Spurenelemente
             { id: 'calcium', name: 'Calcium (Kalzium)', cat: 'minerals', unit: 'mg', rdaM: 1000, rdaW: 1000, consumed: 0, icon: 'fa-bone', color: 'slate' },
             { id: 'magnesium', name: 'Magnesium', cat: 'minerals', unit: 'mg', rdaM: 350, rdaW: 300, consumed: 0, icon: 'fa-bolt-lightning', color: 'indigo' },
             { id: 'potassium', name: 'Kalium', cat: 'minerals', unit: 'mg', rdaM: 4000, rdaW: 4000, consumed: 0, icon: 'fa-heart-pulse', color: 'red' },
@@ -41,7 +267,6 @@
             { id: 'manganese', name: 'Mangan', cat: 'minerals', unit: 'mg', rdaM: 3.0, rdaW: 3.0, consumed: 0, icon: 'fa-cubes', color: 'emerald' }
         ];
 
-        // Food Presets Data
         const foodPresets = {
             haferflocken: { name: 'Haferflocken (100g)', nutrients: { kcal: 370, protein: 13, carbs: 59, fat: 7, fiber: 10, vitB1: 0.6, magnesium: 130, zinc: 4.0, iron: 4.5 } },
             lachs: { name: 'Lachsfilet (150g)', nutrients: { kcal: 310, protein: 30, fat: 20, vitD: 16, vitB12: 4.5, selenium: 40, potassium: 500 } },
@@ -52,12 +277,10 @@
             apfel: { name: 'Apfel mit Schale (180g)', nutrients: { kcal: 95, carbs: 22, fiber: 4, vitC: 12, potassium: 190 } }
         };
 
-        // App State
         let currentGender = 'm';
         let currentCategory = 'all';
         let foodLogs = [];
 
-        // Initialize App
         document.addEventListener('DOMContentLoaded', () => {
             loadFromLocalStorage();
             populateSelectOptions();
@@ -67,12 +290,10 @@
             updateCsvPreview();
         });
 
-        // Set Active Profile / Gender
         function setProfile(gender) {
             currentGender = gender;
             const maleBtn = document.getElementById('profileMaleBtn');
             const femaleBtn = document.getElementById('profileFemaleBtn');
-
             if (gender === 'm') {
                 maleBtn.className = "px-3 py-1 rounded-md font-medium transition-colors bg-emerald-500 text-slate-950 shadow";
                 femaleBtn.className = "px-3 py-1 rounded-md font-medium text-slate-300 hover:text-white transition-colors";
@@ -86,7 +307,6 @@
             saveToLocalStorage();
         }
 
-        // Switch Tabs
         function switchTab(tabId) {
             document.getElementById('tabOverview').classList.add('hidden');
             document.getElementById('tabLog').classList.add('hidden');
@@ -109,20 +329,16 @@
             }
         }
 
-        // Filter Category Buttons
         function filterCategory(cat) {
             currentCategory = cat;
             document.querySelectorAll('.cat-filter-btn').forEach(btn => {
                 btn.className = "cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200";
             });
             const activeBtn = document.getElementById(`catBtn-${cat}`);
-            if (activeBtn) {
-                activeBtn.className = "cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white";
-            }
+            if (activeBtn) activeBtn.className = "cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white";
             renderNutrientsTable();
         }
 
-        // Populate Dropdowns
         function populateSelectOptions() {
             const select = document.getElementById('logNutrientSelect');
             if(!select) return;
@@ -135,7 +351,6 @@
             });
         }
 
-        // Render Overview Table
         function renderNutrientsTable() {
             const tbody = document.getElementById('nutrientsTableBody');
             if(!tbody) return;
@@ -175,27 +390,22 @@
                     barColor = 'bg-slate-300';
                 }
 
-                let diffDisplay = '';
-                if (diff >= 0) {
-                    diffDisplay = `<span class="text-emerald-600 font-semibold">+${diff} ${item.unit}</span>`;
-                } else {
-                    diffDisplay = `<span class="text-slate-400">${diff} ${item.unit}</span>`;
-                }
+                let diffDisplay = (diff >= 0) ? `<span class="text-emerald-400 font-semibold">+${diff} ${item.unit}</span>` : `<span class="text-slate-400">${diff} ${item.unit}</span>`;
 
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50/80 transition-colors";
+                tr.className = "hover:bg-slate-700/40 transition-colors";
                 tr.innerHTML = `
-                    <td class="py-3 px-4 font-semibold text-slate-800 flex items-center space-x-2.5">
-                        <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center text-xs">
+                    <td class="py-3 px-4 font-semibold text-slate-100 flex items-center space-x-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-slate-700 text-slate-300 flex items-center justify-center text-xs">
                             <i class="fa-solid ${item.icon}"></i>
                         </div>
                         <span>${item.name}</span>
                     </td>
-                    <td class="py-3 px-4 text-center font-medium text-slate-700 bg-slate-50/50">
-                        ${targetVal} <span class="text-xs text-slate-400">${item.unit}</span>
+                    <td class="py-3 px-4 text-center font-medium text-slate-300">
+                        ${targetVal} <span class="text-xs text-slate-500">${item.unit}</span>
                     </td>
-                    <td class="py-3 px-4 text-center font-bold text-slate-900">
-                        <input type="number" step="0.1" value="${item.consumed}" onchange="updateConsumedDirect('${item.id}', this.value)" class="w-20 px-2 py-1 text-center font-bold border border-slate-200 rounded-md focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    <td class="py-3 px-4 text-center font-bold text-white">
+                        <input type="number" step="0.1" value="${item.consumed}" onchange="updateConsumedDirect('${item.id}', this.value)" class="w-20 px-2 py-1 text-center font-bold bg-slate-900 border border-slate-700 rounded-md text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                         <span class="text-xs text-slate-400 font-normal">${item.unit}</span>
                     </td>
                     <td class="py-3 px-4">
@@ -203,7 +413,7 @@
                             <div class="flex justify-between items-center text-xs">
                                 ${statusBadge}
                             </div>
-                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
                                 <div class="${barColor} h-full transition-all duration-300" style="width: ${Math.min(pct, 100)}%"></div>
                             </div>
                         </div>
@@ -213,9 +423,9 @@
                     </td>
                     <td class="py-3 px-4 text-center">
                         <div class="inline-flex rounded-md shadow-sm space-x-1" role="group">
-                            <button onclick="adjustNutrientValue('${item.id}', 1)" class="px-2 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-l-md border border-slate-200">+1</button>
-                            <button onclick="adjustNutrientValue('${item.id}', 10)" class="px-2 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200">+10</button>
-                            <button onclick="adjustNutrientValue('${item.id}', -1)" class="px-2 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-r-md border border-slate-200">-1</button>
+                            <button onclick="adjustNutrientValue('${item.id}', 1)" class="px-2 py-1 text-xs font-bold text-slate-200 bg-slate-700 hover:bg-slate-600 rounded-l-md border border-slate-600">+1</button>
+                            <button onclick="adjustNutrientValue('${item.id}', 10)" class="px-2 py-1 text-xs font-bold text-slate-200 bg-slate-700 hover:bg-slate-600 border border-slate-600">+10</button>
+                            <button onclick="adjustNutrientValue('${item.id}', -1)" class="px-2 py-1 text-xs font-bold text-slate-200 bg-slate-700 hover:bg-slate-600 rounded-r-md border border-slate-600">-1</button>
                         </div>
                     </td>
                 `;
@@ -270,13 +480,8 @@
         function loadPresetFood() {
             const key = document.getElementById('presetFoodSelect').value;
             if (!key || !foodPresets[key]) return;
-            addPresetDirect(key);
-        }
 
-        function addPresetDirect(presetKey) {
-            const preset = foodPresets[presetKey];
-            if (!preset) return;
-
+            const preset = foodPresets[key];
             let logDetails = [];
             for (const [nutId, val] of Object.entries(preset.nutrients)) {
                 const item = nutrientDatabase.find(n => n.id === nutId);
@@ -313,7 +518,6 @@
             const item = nutrientDatabase.find(n => n.id === nutId);
             if (item) {
                 item.consumed = parseFloat((item.consumed + amount).toFixed(2));
-
                 const now = new Date();
                 const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -342,7 +546,6 @@
             const tbody = document.getElementById('logHistoryTableBody');
             if(!tbody) return;
             tbody.innerHTML = '';
-
             document.getElementById('logCountBadge').textContent = `${foodLogs.length} Einträge`;
 
             if (foodLogs.length === 0) {
@@ -352,13 +555,13 @@
 
             foodLogs.forEach(log => {
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50";
+                tr.className = "hover:bg-slate-700/40";
                 tr.innerHTML = `
-                    <td class="py-2.5 px-3 text-slate-500 font-mono">${log.time}</td>
-                    <td class="py-2.5 px-3 font-semibold text-slate-800">${log.title}</td>
-                    <td class="py-2.5 px-3 text-slate-600">${log.details}</td>
+                    <td class="py-2.5 px-3 text-slate-400 font-mono">${log.time}</td>
+                    <td class="py-2.5 px-3 font-semibold text-slate-100">${log.title}</td>
+                    <td class="py-2.5 px-3 text-slate-300">${log.details}</td>
                     <td class="py-2.5 px-3 text-right">
-                        <button onclick="removeLogEntry(${log.id})" class="text-red-500 hover:text-red-700 text-xs font-semibold">
+                        <button onclick="removeLogEntry(${log.id})" class="text-red-400 hover:text-red-300 text-xs font-semibold">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </td>
@@ -379,9 +582,7 @@
 
         function updateCsvPreview() {
             const area = document.getElementById('csvPreviewArea');
-            if (area) {
-                area.value = generateCSVData();
-            }
+            if (area) area.value = generateCSVData();
         }
 
         function exportToExcelCSV() {
@@ -412,7 +613,6 @@
                     if (parts.length >= 7) {
                         const nutId = parts[0].trim();
                         const consumedVal = parseFloat(parts[6].replace(',', '.'));
-
                         const item = nutrientDatabase.find(n => n.id === nutId);
                         if (item && !isNaN(consumedVal)) {
                             item.consumed = consumedVal;
@@ -469,3 +669,5 @@
             }
         }
     </script>
+</body>
+</html>
