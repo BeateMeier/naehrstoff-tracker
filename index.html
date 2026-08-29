@@ -4,17 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nährstoff-Tracker</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen">
 
-    <!-- JAVASCRIPT: ISOLIERTE PASSWORT-ABFRAGE -->
     <script>
         (function() {
-            const PASSWORT = "Lecker"; // === HIER DEIN PASSWORT EINTRAGEN ===
+            const PASSWORT = "DeinPasswort123"; // === HIER DEIN PASSWORT EINTRAGEN ===
             const eingabe = prompt("Bitte gib das Passwort ein:");
             if (!eingabe || eingabe.trim() !== PASSWORT) {
                 alert("Falsches Passwort! Zugriff verweigert.");
@@ -24,7 +21,6 @@
         })();
     </script>
 
-    <!-- HEADER / NAVIGATION -->
     <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
@@ -37,7 +33,6 @@
                 </div>
             </div>
 
-            <!-- Profile Selector -->
             <div class="flex items-center bg-slate-900/80 p-1 rounded-lg border border-slate-700 text-xs">
                 <span class="text-slate-400 px-2 font-medium">Profil:</span>
                 <button id="profileMaleBtn" onclick="setProfile('m')" class="px-3 py-1 rounded-md font-medium transition-colors bg-emerald-500 text-slate-950 shadow">Männlich</button>
@@ -45,7 +40,6 @@
             </div>
         </div>
         
-        <!-- Tab Navigation -->
         <div class="max-w-7xl mx-auto px-4 flex border-t border-slate-700/50 overflow-x-auto">
             <button id="tabNavOverview" onclick="switchTab('overview')" class="px-4 py-3 text-sm font-semibold border-b-2 border-emerald-400 text-emerald-400 flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-chart-pie"></i><span>Übersicht</span>
@@ -59,10 +53,8 @@
         </div>
     </header>
 
-    <!-- MAIN CONTAINER -->
     <main class="max-w-7xl mx-auto px-4 py-6">
 
-        <!-- TAB 1: ÜBERSICHT -->
         <div id="tabOverview" class="space-y-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
@@ -99,7 +91,6 @@
                 </div>
             </div>
 
-            <!-- Controls & Filter -->
             <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-wrap gap-3 items-center justify-between">
                 <div class="flex flex-wrap gap-2">
                     <button id="catBtn-all" onclick="filterCategory('all')" class="cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white">Alle Nährstoffe</button>
@@ -114,7 +105,6 @@
                 </div>
             </div>
 
-            <!-- Table -->
             <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
@@ -135,11 +125,9 @@
             </div>
         </div>
 
-        <!-- TAB 2: LOGGING -->
         <div id="tabLog" class="space-y-6 hidden">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                 
-                <!-- Preset Food Form -->
                 <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-4">
                     <h2 class="text-base font-bold text-white flex items-center space-x-2">
                         <i class="fa-solid fa-bowl-food text-emerald-400"></i>
@@ -148,7 +136,7 @@
                     
                     <div class="space-y-3">
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1 font-medium">Vorlage auswählen</label>
+                            <label class="block text-xs text-slate-400 mb-1 font-medium">Vorlage auswählen (A–Z)</label>
                             <select id="presetFoodSelect" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                             </select>
                         </div>
@@ -164,7 +152,6 @@
                     </button>
                 </div>
 
-                <!-- Create Custom Food Form -->
                 <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-4">
                     <h2 class="text-base font-bold text-white flex items-center space-x-2">
                         <i class="fa-solid fa-plus-circle text-emerald-400"></i>
@@ -177,10 +164,8 @@
                             <input type="text" id="newFoodName" placeholder="z. B. Hafermilch" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                         </div>
 
-                        <!-- Dynamic Nutrient Inputs Grid -->
                         <div class="max-h-60 overflow-y-auto p-2 bg-slate-900/50 rounded-lg border border-slate-700">
                             <div id="customFoodNutrientsGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                <!-- Generiert per JS -->
                             </div>
                         </div>
 
@@ -191,7 +176,6 @@
                 </div>
             </div>
 
-            <!-- Log History Table -->
             <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow">
                 <div class="p-4 border-b border-slate-700 flex justify-between items-center">
                     <h3 class="font-bold text-white text-sm">Heute verzehrte Mahlzeiten & Einträge</h3>
@@ -214,21 +198,38 @@
             </div>
         </div>
 
-        <!-- TAB 3: EXCEL / CSV -->
         <div id="tabExcel" class="space-y-6 hidden">
             <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4">
-                <h2 class="text-lg font-bold text-white">Daten sichern & Exportieren</h2>
-                <p class="text-xs text-slate-400">Exportiere deine Tageswerte als CSV-Datei für Microsoft Excel oder importiere eine gesicherte Datei.</p>
+                <h2 class="text-lg font-bold text-white">Tagesfortschritt Sichern & Importieren</h2>
+                <p class="text-xs text-slate-400">Exportiere deine heute aufgenommenen Nährstoffwerte als CSV-Datei für Microsoft Excel oder importiere eine gesicherte Tagesdatei.</p>
                 <div class="flex flex-wrap gap-3">
                     <button onclick="exportToExcelCSV()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-sm transition-colors flex items-center space-x-2">
-                        <i class="fa-solid fa-file-excel"></i><span>Als CSV / Excel herunterladen</span>
+                        <i class="fa-solid fa-file-excel"></i><span>Tageswerte als CSV herunterladen</span>
                     </button>
                     <label class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-lg text-sm cursor-pointer transition-colors flex items-center space-x-2">
-                        <i class="fa-solid fa-file-import"></i><span>CSV Importieren</span>
+                        <i class="fa-solid fa-file-import"></i><span>Tageswerte Importieren</span>
                         <input type="file" accept=".csv" onchange="importFromCSV(event)" class="hidden">
                     </label>
                 </div>
             </div>
+
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4">
+                <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-database text-emerald-400"></i>
+                    <span>Lebensmittel-Datenbank aus Excel importieren</span>
+                </h2>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    Importiere eine Excel-CSV-Datei mit deinen Lebensmitteln (Werte pro 100g). Erstelle dafür eine Tabelle in Excel mit der 1. Zeile als Spaltenköpfe:<br>
+                    <code class="text-emerald-400 bg-slate-950 px-1 py-0.5 rounded font-mono">Name;kcal;protein;carbs;fat;fiber;vitC;magnesium;...</code>
+                </p>
+                <div class="flex flex-wrap gap-3">
+                    <label class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-sm cursor-pointer transition-colors flex items-center space-x-2 shadow">
+                        <i class="fa-solid fa-file-circle-plus"></i><span>Lebensmittel-Liste aus CSV importieren</span>
+                        <input type="file" accept=".csv" onchange="importFoodDatabaseFromCSV(event)" class="hidden">
+                    </label>
+                </div>
+            </div>
+
             <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-2">
                 <h3 class="text-sm font-semibold text-slate-300">Vorschau der Export-Daten:</h3>
                 <textarea id="csvPreviewArea" readonly class="w-full h-48 bg-slate-950 text-slate-300 font-mono text-xs p-3 rounded-lg border border-slate-700 focus:outline-none"></textarea>
@@ -237,7 +238,6 @@
 
     </main>
 
-    <!-- MAIN JAVASCRIPT LOGIC -->
     <script>
         const nutrientDatabase = [
             { id: 'kcal', name: 'Energie (Kalorien)', cat: 'macro', unit: 'kcal', rdaM: 2200, rdaW: 1800, consumed: 0, icon: 'fa-bolt', color: 'amber' },
@@ -272,7 +272,6 @@
             { id: 'manganese', name: 'Mangan', cat: 'minerals', unit: 'mg', rdaM: 3.0, rdaW: 3.0, consumed: 0, icon: 'fa-cubes', color: 'emerald' }
         ];
 
-        // Vorlagen normiert auf 100g
         let foodPresets = {
             haferflocken: { name: 'Haferflocken', nutrientsPer100g: { kcal: 370, protein: 13, carbs: 59, fat: 7, fiber: 10, vitB1: 0.6, magnesium: 130, zinc: 4.0, iron: 4.5 } },
             lachs: { name: 'Lachsfilet', nutrientsPer100g: { kcal: 206, protein: 20, fat: 13, vitD: 11, vitB12: 3.0, selenium: 27, potassium: 333 } },
@@ -360,16 +359,22 @@
             });
         }
 
+        // AKTUALLISIERT: Sortiert alle Lebensmittel alphabetisch nach Namen (localeCompare)
         function updatePresetDropdown() {
             const select = document.getElementById('presetFoodSelect');
             if (!select) return;
             select.innerHTML = '<option value="">-- Bitte wählen --</option>';
-            for (const [key, food] of Object.entries(foodPresets)) {
+            
+            const sortedKeys = Object.keys(foodPresets).sort((a, b) => {
+                return foodPresets[a].name.localeCompare(foodPresets[b].name, 'de', { sensitivity: 'base' });
+            });
+
+            sortedKeys.forEach(key => {
                 const option = document.createElement('option');
                 option.value = key;
-                option.textContent = food.name;
+                option.textContent = foodPresets[key].name;
                 select.appendChild(option);
-            }
+            });
         }
 
         function createNewFoodPreset() {
@@ -393,7 +398,6 @@
             const key = 'custom_' + Date.now();
             foodPresets[key] = { name: name, nutrientsPer100g: nutrientsPer100g };
 
-            // Formular leeren
             document.getElementById('newFoodName').value = '';
             nutrientDatabase.forEach(n => {
                 const input = document.getElementById(`newNutrient_${n.id}`);
@@ -661,6 +665,60 @@
                 updateSummaryCards();
                 updateCsvPreview();
                 saveToLocalStorage();
+            };
+            reader.readAsText(file);
+        }
+
+        function importFoodDatabaseFromCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                if (lines.length < 2) {
+                    alert('Die Datei enthält keine gültigen Daten.');
+                    return;
+                }
+
+                const delimiter = lines[0].includes(';') ? ';' : ',';
+                const headers = lines[0].split(delimiter).map(h => h.trim().replace(/^"|"$/g, ''));
+
+                const nameIndex = headers.findIndex(h => h.toLowerCase() === 'name');
+                if (nameIndex === -1) {
+                    alert('Fehler: Keine Spalte "Name" in der ersten Zeile gefunden!');
+                    return;
+                }
+
+                let importedCount = 0;
+
+                for (let i = 1; i < lines.length; i++) {
+                    const row = lines[i].split(delimiter).map(r => r.trim().replace(/^"|"$/g, ''));
+                    const foodName = row[nameIndex];
+                    if (!foodName) continue;
+
+                    const nutrientsPer100g = {};
+
+                    headers.forEach((h, colIdx) => {
+                        if (colIdx === nameIndex) return;
+                        const nutItem = nutrientDatabase.find(n => n.id.toLowerCase() === h.toLowerCase());
+                        if (nutItem && row[colIdx]) {
+                            const val = parseFloat(row[colIdx].replace(',', '.'));
+                            if (!isNaN(val) && val > 0) {
+                                nutrientsPer100g[nutItem.id] = val;
+                            }
+                        }
+                    });
+
+                    const key = 'imported_' + Date.now() + '_' + i;
+                    foodPresets[key] = { name: foodName, nutrientsPer100g: nutrientsPer100g };
+                    importedCount++;
+                }
+
+                updatePresetDropdown();
+                saveToLocalStorage();
+                alert(`${importedCount} Lebensmittel wurden erfolgreich importiert und stehen jetzt alphabetisch sortiert bereit!`);
             };
             reader.readAsText(file);
         }
